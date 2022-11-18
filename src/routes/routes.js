@@ -12,16 +12,16 @@ module.exports = app => {
     // Retrieve all user emails
     router.get("/email", user.findAllEmails);
 
-    // Retrieve a single Tutorial with id
+    // Retrieve a single user with id
     router.get("/:id", user.findOneUser);
 
-    // Update a Tutorial with id
+    // Update a user with id
     router.put("/:id", user.updateUser);
 
-    // Delete a Tutorial with id
+    // Delete a user with id
     router.delete("/:id", user.deleteUser);
 
-    // Create a new Tutorial
+    // Delete all Users
     router.delete("/", user.deleteAllUsers);
 
     app.use('/api/user', router);

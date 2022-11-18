@@ -1,4 +1,5 @@
 const db = require("../models");
+const {USER} = require("../config/dbconfig");
 const User = db.users;
 const Op = db.Sequelize.Op;
 
@@ -137,19 +138,20 @@ exports.deleteAllUsers = (req, res) => {
         });
 };
 
-// Find all user emails  not working
-exports.findAllEmails = (req, res) => {
-    const email = req.body.email
-    let condition = email ? { email: { [Op.iLike]: `%${email}%` } } : null;
+// Find all user emails
 
-    User.findAll({ where: condition })
-        .then(data => {
-            res.send(data.user.email);
-        })
-        .catch(err => {
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while retrieving emails."
-            });
+exports.findAllEmails = (req, res) => {
+
+User.findAll({
+    attributes:['email']
+})
+    .then(data => {
+        res.send(data);
+    })
+    .catch(err => {
+        res.status(500).send({
+            message:
+                err.message || "Some error occurred while retrieving emails."
         });
+    });
 };
