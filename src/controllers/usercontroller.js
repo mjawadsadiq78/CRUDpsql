@@ -19,7 +19,7 @@ exports.createuser = (req, res) => {
         phoneNo: req.body.phoneNo ? req.body.phoneNo : false
     };
 
-    // Save Tutorial in the database
+    // Save User in the database
     User.create(user)
         .then(data => {
             res.send(data);
@@ -137,14 +137,14 @@ exports.deleteAllUsers = (req, res) => {
         });
 };
 
-// Find all user emails
+// Find all user emails  not working
 exports.findAllEmails = (req, res) => {
     const email = req.body.email
     let condition = email ? { email: { [Op.iLike]: `%${email}%` } } : null;
 
     User.findAll({ where: condition })
         .then(data => {
-            res.send(data);
+            res.send(data.user.email);
         })
         .catch(err => {
             res.status(500).send({
