@@ -1,12 +1,11 @@
 const db = require("../models");
-const {USER} = require("../config/dbconfig");
 const User = db.users;
 const Op = db.Sequelize.Op;
-
+const {getPagination, getPagingData} = require("../utils/pagination");
 // Create and Save a new User
 exports.createuser = (req, res) => {
     // Validate request
-    if (!req.body.name) {
+    if (!(req.body.first_name && req.body.email)) {
         res.status(400).send({
             message: "Content can not be empty!"
         });
@@ -15,10 +14,17 @@ exports.createuser = (req, res) => {
 
     // Create a User
     const user = {
-        name: req.body.name,
+
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        gender: req.body.gender,
+        username: req.body.username,
         email: req.body.email,
-        phoneNo: req.body.phoneNo ? req.body.phoneNo : false
+        phoneNo: req.body.phoneNo,
+        status_id: req.body.status_id
+        /*? req.body.phoneNo : false*/
     };
+    console.log(user);
 
     // Save User in the database
     User.create(user)
@@ -33,14 +39,21 @@ exports.createuser = (req, res) => {
         });
 };
 
+
+
 // Retrieve all Users from the database.
 exports.findAllUsers = (req, res) => {
-    const name = req.query.name;
-    let condition = name ? { name: { [Op.iLike]: `%${name}%` } } : null;
 
-    User.findAll({ where: condition })
+    const { page, size } = req.query;
+
+    const { limit, offset } = getPagination(page, size);
+    User.findAndCountAll({
+        limit,
+        offset,
+        attributes:{ exclude: ['createdAt', 'updatedAt', 'deletedAt']} })
         .then(data => {
-            res.send(data);
+            const response = getPagingData(data, page, limit);
+            res.send(response);
         })
         .catch(err => {
             res.status(500).send({
